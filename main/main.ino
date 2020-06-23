@@ -30,38 +30,40 @@ int colors[][3] = {
 
 int selectedBar = 0;
 int sideBar[] = {
-  10, 
-  10, 
-  1056, 
-  10, 
-  10, 
-  10, 
-  10, 
-  10, 
-  10, 
-  10,
+  0, 
+  0, 
+  0, 
+  0, 
+  0, 
+  0, 
+  0, 
+  0, 
+  0, 
+  0,
 };
- // Wrap around = (startIndex + i) % length
-int measureStartX = 0;
-int graphBuffer[GRAPH_SIZE * 10] = {0};
+
+float buffer = 0;
+int measureLength = 0;
+
 int graphX = 0;
+
+void startMeasure(){
+  buffer = 0;
+  measureLength = 0;
+}
+
+void stopMeasure(){
+  sideBar[selectedBar] = mesaureValue();
+  drawBarElement(selectedBar, selectedBar);
+}
 
 int mesaureValue()
 {
-  int length = abs(graphX - measureStartX);
-  int sum = 0;
-  for(int i = 0; i < sizeof(graphBuffer); i++)
+  if(measureLength == 0)
   {
-    int tempX = (measureStartX + i) % length + 1;
-    sum += graphBuffer[tempX];
-    if(tempX == graphX)
-    {
-      break;
-    }
-
+    return 0;
   }
-
-  return sum;
+  return buffer / measureLength;
 }
 
 void setup()
@@ -75,32 +77,44 @@ void setup()
   myGLCD.clrScr();
   drawChartArea();
   drawSidebar();
+
+  startMeasure(); // TEMP
 }
 
 
 void drawBarElement(int selected, int i)
 {
-  int backColor[3] = {255, 255, 255};
+  char msg[3];
+  itoa(sideBar[i], msg, 10);
+
+  int backColor = 255;
   if(selected == i)
   {
-    backColor[0] = 238;
-    backColor[1] = 238;
-    backColor[2] = 238;
+    backColor = 238;
   }
 
-  myGLCD.setColor(backColor[0], backColor[1], backColor[2]);
+  myGLCD.setColor(backColor, backColor, backColor);
   myGLCD.fillRect(GRAPH_SIZE, (i * SIDEBAR_MARGIN), DISPLAY_WIDTH, ((i + 1) * SIDEBAR_MARGIN) + 5);
+
+  if(selected == i)
+  {
+    myGLCD.setColor(218, 218, 218);
+    myGLCD.fillRect(GRAPH_SIZE + 1, (i * SIDEBAR_MARGIN), GRAPH_SIZE + 1, ((i + 1) * SIDEBAR_MARGIN) + 5);
+  }
+
+  // Shadow
+  myGLCD.setColor(200, 200, 200);
+  myGLCD.drawCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))) + 1, 6);
+  myGLCD.fillCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))) + 1, 3);
+  myGLCD.setBackColor(VGA_TRANSPARENT);
+  myGLCD.print(msg, GRAPH_SIZE + 31, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 6)) + 1);
+
   
   myGLCD.setColor(colors[i][0], colors[i][1], colors[i][2]);
   myGLCD.drawCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))), 6);
-  myGLCD.fillCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))), 4);
+  myGLCD.fillCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))), 3);
 
   myGLCD.setColor(0, 0, 0);
-
-  myGLCD.setBackColor(backColor[0], backColor[1], backColor[1]);
-
-  char msg[30];
-  itoa(sideBar[i], msg, 10);
   myGLCD.print(msg, GRAPH_SIZE + 30, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 6)));
 }
 
@@ -131,20 +145,35 @@ void updateSidebar(int newSelectedBar)
 void updateChart()
 {
   int value = analogRead(alkoPin);
-  int y = map(value, 0, 1023, 0, DISPLAY_HEIGHT);
-  int tempX = graphX % GRAPH_SIZE;
+  int y = map(value, 0, 1023, DISPLAY_HEIGHT, 0);
 
   myGLCD.setColor(241, 241, 241);
-  myGLCD.fillRect(tempX, 0, tempX + 1, DISPLAY_HEIGHT);
+  if(graphX + 1 == GRAPH_SIZE)
+  {
+    myGLCD.fillRect(0, 0, 1, DISPLAY_HEIGHT);
+  }else{
+    myGLCD.fillRect(graphX, 0, graphX + 1, DISPLAY_HEIGHT);
+  }
 
   myGLCD.setColor(colors[selectedBar][0], colors[selectedBar][1], colors[selectedBar][2]);
-  myGLCD.drawPixel(tempX, y);
-  myGLCD.drawPixel(tempX, y - 1);
-  myGLCD.drawPixel(tempX, y + 1);
+  myGLCD.drawPixel(graphX, y);
+  myGLCD.drawPixel(graphX, y - 1);
 
-  graphBuffer[graphX] = value;
+  myGLCD.setColor(0, 0, 0);
+  myGLCD.setBackColor(241, 241, 241);
+  String val = String(value);
+  myGLCD.print(val, GRAPH_SIZE / 2, 1);
+
+  myGLCD.setColor(200, 200, 200); // Shadow
+  myGLCD.drawPixel(graphX, y + 1);
+  myGLCD.setColor(220, 220, 220);
+  myGLCD.drawPixel(graphX, y + 2);
+
+  buffer += value;
+  measureLength++;
+  
   graphX++;
-  if(graphX > sizeof(graphBuffer))
+  if(graphX >= GRAPH_SIZE)
   {
     graphX = 0;
   }
@@ -168,9 +197,4 @@ void loop()
       }
     }
   }
-
-  int tempValue = mesaureValue();
-  char msg[30];
-  itoa(tempValue, msg, 10);
-  myGLCD.print(msg, CENTER, CENTER);
 }

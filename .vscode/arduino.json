@@ -1,8 +1,9 @@
 {
-    "sketch": "main.c",
+    "sketch": "main\\main.ino",
     "port": "COM5",
     "board": "arduino:avr:uno",
     "output": "../build",
     "debugger": "jlink",
-    "prebuild": "bash prebuild.sh"
+    "prebuild": "bash prebuild.sh",
+    "programmer": "AVRISP mkII"
 }
