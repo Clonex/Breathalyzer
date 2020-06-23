@@ -98,7 +98,8 @@ void drawBarElement(int selected, int i)
 
   if(selected == i)
   {
-    myGLCD.setColor(218, 218, 218);
+    // myGLCD.setColor(218, 218, 218);
+    myGLCD.setColor(colors[i][0], colors[i][1], colors[i][2]);
     myGLCD.fillRect(GRAPH_SIZE + 1, (i * SIDEBAR_MARGIN), GRAPH_SIZE + 1, ((i + 1) * SIDEBAR_MARGIN) + 5);
   }
 
@@ -129,10 +130,46 @@ void drawSidebar()
   }
 }
 
+void drawSystem(int x)
+{
+  myGLCD.setColor(225, 225, 225);
+  int unitSizeY = DISPLAY_HEIGHT / 100;
+
+  if((x % (DISPLAY_WIDTH / 10)) == 0)
+  {
+    myGLCD.fillRect(x, 0, x, DISPLAY_HEIGHT);
+  }else{
+    for(int y = 0; y <= 110; y += 10)
+    {
+      int yPos = y * unitSizeY;
+      myGLCD.drawPixel(x, yPos);
+    }
+  }
+}
+
 void drawChartArea()
 {
   myGLCD.setColor(241, 241, 241);
   myGLCD.fillRect(0, 0, GRAPH_SIZE, DISPLAY_HEIGHT);
+
+
+  // Draw grid
+  for(int x = 0; x < DISPLAY_WIDTH; x++){
+    drawSystem(x);
+  }
+
+
+  // for(int y = 0; y <= 110; y += 10)
+  // {
+  //   int yPos = y * unitSizeY;
+  //   myGLCD.fillRect(0, yPos, GRAPH_SIZE, yPos + 1);
+
+  //   for(int x = 0; x < 100; x += 10)
+  //   {
+  //     int xPos = x * unitSizeX;
+  //     myGLCD.fillRect(xPos, 0, xPos + 1, DISPLAY_HEIGHT);
+  //   }
+  // }
 }
 
 void updateSidebar(int newSelectedBar)
@@ -151,8 +188,11 @@ void updateChart()
   if(graphX + 1 == GRAPH_SIZE)
   {
     myGLCD.fillRect(0, 0, 1, DISPLAY_HEIGHT);
+    drawSystem(0);
   }else{
     myGLCD.fillRect(graphX, 0, graphX + 1, DISPLAY_HEIGHT);
+    drawSystem(graphX);
+    drawSystem(graphX + 1);
   }
 
   myGLCD.setColor(colors[selectedBar][0], colors[selectedBar][1], colors[selectedBar][2]);
