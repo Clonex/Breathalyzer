@@ -9,9 +9,9 @@ int alkoPinD = 13;
 UTFT myGLCD(ILI9325C,A5,A4,A3,11);
 ITDB02_Touch  myTouch( A1, 10, A0, 9, 8);
 
-bool inSettings = true;
+bool inSettings = false;
 
-int alkoMax = 1023;
+int alkoMax = 1023; // 1023
 int SIDEBAR_MAX = 7;
 
 #define DISPLAY_WIDTH 319
@@ -21,6 +21,9 @@ int SIDEBAR_MAX = 7;
 #define SIDEBAR_MARGIN (DISPLAY_HEIGHT / SIDEBAR_MAX)
 
 #define GRAPH_SIZE (DISPLAY_WIDTH - SIDEBAR_SIZE)
+
+#define btnWidth 50
+#define btnHeight 50
 
 int colors[][3] = {
   {209, 41, 224}, // Pink
@@ -86,7 +89,6 @@ void setup()
   myTouch.setPrecision(PREC_MEDIUM);
 
   firstDraw();
-  toSettings(); // Temp
 }
 
 void firstDraw(){
@@ -94,6 +96,11 @@ void firstDraw(){
   
   drawChartArea();
   drawSidebar();
+
+  if(inSettings)
+  {
+    toSettings();
+  }
 }
 
 void drawBarElement(int selected, int i)
@@ -180,7 +187,9 @@ void updateSidebar(int newSelectedBar)
 
 void updateChart()
 {
-  int value = analogRead(alkoPin        );
+  //alkoMax
+  int value = analogRead(alkoPin);
+  value = map(value, 0, alkoMax, 0, 1023);
   int y = map(value, 0, 1023, DISPLAY_HEIGHT, 0);
 
   myGLCD.setColor(241, 241, 241);
@@ -227,6 +236,7 @@ void toSettings()
   myGLCD.setBackColor(255, 255, 255);
   myGLCD.setColor(0, 0, 0);
   myGLCD.print("SETTINGS", CENTER, CENTER);
+  inSettings = true;
 }
 
 void exitSettings()
@@ -235,61 +245,87 @@ void exitSettings()
   firstDraw();
 }
 
+void drawSettingsText()
+{
+  myGLCD.print("Players:", CENTER, 60);
+  myGLCD.print(String(SIDEBAR_MAX), CENTER, 80);
 
-int btnWidth = 50;
-int btnHeight = 50;
+  
+  myGLCD.setColor(200, 200, 200);
+  myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 50, (DISPLAY_WIDTH / 2) - 100, 50 + btnHeight); // -
+  myGLCD.print("-", (DISPLAY_WIDTH / 2) - (100 + (btnWidth / 2)), 50 + (btnHeight / 2));
+
+  myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) + (100 + btnWidth), 50, (DISPLAY_WIDTH / 2) + 100, 50 + btnHeight); // +
+  myGLCD.print("+", (DISPLAY_WIDTH / 2) + (100 + (btnWidth / 2)), 50 + (btnHeight / 2));
+
+  myGLCD.print("Sensitivity MAX:", CENTER, 140);
+  myGLCD.print(String(alkoMax), CENTER, 160);
+  myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 130, (DISPLAY_WIDTH / 2) - 100, 130 + btnHeight); // -
+  myGLCD.print("-", (DISPLAY_WIDTH / 2) - (100 + (btnWidth / 2)), 130 + (btnHeight / 2));
+
+  myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) + (100 + btnWidth), 130, (DISPLAY_WIDTH / 2) + 100, 130 + btnHeight); // +
+  myGLCD.print("+", (DISPLAY_WIDTH / 2) + (100 + (btnWidth / 2)), 130 + (btnHeight / 2));
+
+  myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 190, (DISPLAY_WIDTH / 2) + (100 + btnWidth), 190 + btnHeight); // +
+  myGLCD.print("Exit", (DISPLAY_WIDTH / 2), 190 + (btnHeight / 2));
+}
+
+void handleSettingsTouch()
+{
+  while(myTouch.dataAvailable())
+  {
+    myTouch.read();
+    int x = myTouch.getX();
+    int y = myTouch.getY();
+    if(x != -1 && y != -1)
+    {
+      if(y >= 50 && y <= (50 + (btnHeight))) // Players
+      {
+        if(x <= ((DISPLAY_WIDTH / 2) + (100 + btnWidth)) && x >= ((DISPLAY_WIDTH / 2) + 100) && SIDEBAR_MAX < 10)
+        {
+          SIDEBAR_MAX++;
+        }else if(x >= ((DISPLAY_WIDTH / 2) - (100 + btnWidth)) && x <= ((DISPLAY_WIDTH / 2) - 100) && SIDEBAR_MAX > 1)
+        {
+          if(SIDEBAR_MAX == 10) // Decimal fix
+          {
+            myGLCD.setColor(255, 255, 255);
+            myGLCD.fillRect(0, 40, DISPLAY_WIDTH, 100);
+          }
+          SIDEBAR_MAX--;
+        }
+        break;
+      }else if(y >= 130 && y <= (130 + btnHeight)) // Sensitivity
+      {
+        if(x <= ((DISPLAY_WIDTH / 2) + (100 + btnWidth)) && x >= ((DISPLAY_WIDTH / 2) + 100) && alkoMax < 1023)
+        {
+          alkoMax++;
+        }else if(x >= ((DISPLAY_WIDTH / 2) - (100 + btnWidth)) && x <= ((DISPLAY_WIDTH / 2) - 100) && alkoMax > 1)
+        {
+          if(alkoMax == 1000 || alkoMax == 100 || alkoMax == 10) // Decimal fix
+          {
+            myGLCD.setColor(255, 255, 255);
+            myGLCD.fillRect(0, 160, DISPLAY_WIDTH, 170);
+          }
+          alkoMax--;
+        }
+        break;
+      }else if(y >= 190 && y <= (190 + btnHeight))// Exit
+      {
+        exitSettings();
+        break;
+      } 
+    }
+  }
+}
+
+
 void loop()
 {
   if(inSettings)
   {
-    myGLCD.print("Players:", CENTER, 60);
-    myGLCD.print(String(SIDEBAR_MAX), CENTER, 80);
-
+    drawSettingsText();
+    handleSettingsTouch();
     
-    myGLCD.setColor(200, 200, 200);
-    myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 50, (DISPLAY_WIDTH / 2) - 100, 50 + btnHeight); // -
-    myGLCD.print("-", (DISPLAY_WIDTH / 2) - (100 + (btnWidth / 2)), 50 + (btnHeight / 2));
-
-    myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) + (100 + btnWidth), 50, (DISPLAY_WIDTH / 2) + 100, 50 + btnHeight); // +
-    myGLCD.print("+", (DISPLAY_WIDTH / 2) + (100 + (btnWidth / 2)), 50 + (btnHeight / 2));
-
-    myGLCD.print("Sensitivity MAX:", CENTER, 140);
-    myGLCD.print(String(alkoMax), CENTER, 160);
-    myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 130, (DISPLAY_WIDTH / 2) - 100, 130 + btnHeight); // -
-    myGLCD.print("-", (DISPLAY_WIDTH / 2) - (100 + (btnWidth / 2)), 130 + (btnHeight / 2));
-
-    myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) + (100 + btnWidth), 130, (DISPLAY_WIDTH / 2) + 100, 130 + btnHeight); // +
-    myGLCD.print("+", (DISPLAY_WIDTH / 2) + (100 + (btnWidth / 2)), 130 + (btnHeight / 2));
-
-    myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 190, (DISPLAY_WIDTH / 2) + 100, 190 + btnHeight); // +
-    myGLCD.print("Exit", (DISPLAY_WIDTH / 2) - (100 - (btnWidth / 2)), 190 + (btnHeight / 2));
-
-    while(myTouch.dataAvailable())
-    {
-      myTouch.read();
-      int x = myTouch.getX();
-      int y = myTouch.getY();
-      if(x != -1 && y != -1)
-      {
-        if(y >= 50 && y <= (50 + (btnHeight / 2))) // Players
-        {
-          if(x >= ((DISPLAY_WIDTH / 2) - (100 + btnWidth)) && x <= ((DISPLAY_WIDTH / 2) - 100))
-          {
-            SIDEBAR_MAX--;
-          }else if(x >= ((DISPLAY_WIDTH / 2) + (100 + btnWidth)) && x <= ((DISPLAY_WIDTH / 2) + 100))
-          {
-            SIDEBAR_MAX++;
-          }
-          break;
-        }else if(y >= 0 && y <= 0) // Sensitivity
-        {
-
-        }else if(y >= 0 && y <= 0) // Exit
-        {
-
-        } 
-      }
-    }
   }else{
     updateChart();
     int btnPresses = digitalRead(btnPin);
@@ -303,18 +339,26 @@ void loop()
       stopMeasure();
     }
 
+    myGLCD.setColor(0, 0, 0);
+    myGLCD.print("Settings", 10, 5);
+
     while(myTouch.dataAvailable())
     {
       myTouch.read();
       int x = myTouch.getX();
       int y = myTouch.getY();
+
       if(x != -1 && y != -1)
       {
-        if(x >= GRAPH_SIZE)
+        if(x <= 55 && y <= 30)
+        {
+          toSettings();
+          break;
+        }else if(x >= GRAPH_SIZE)
         {
           graphX = 0;
           updateSidebar(y / SIDEBAR_MARGIN);
-        }
+        } 
       }
     }
   }
