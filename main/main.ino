@@ -82,17 +82,19 @@ int mesaureValue()
 
 void busyStandby()
 {
+  myGLCD.clrScr();
   myGLCD.setBackColor(VGA_TRANSPARENT);
-  myGLCD.setColor(200, 200, 200);
-  myGLCD.print("STANDBY", (GRAPH_SIZE / 2) + 1, (DISPLAY_HEIGHT / 2) + 1);
-  myGLCD.setColor(0, 0, 0);
-  myGLCD.print("STANDBY", GRAPH_SIZE / 2, DISPLAY_HEIGHT / 2);
+  myGLCD.setColor(150, 150, 150);
+  myGLCD.print("STANDBY", (DISPLAY_WIDTH / 2) + 1, (DISPLAY_HEIGHT / 2) + 1);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.print("STANDBY", DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2);
 
   while(digitalRead(btnPin) == HIGH)
   {
     delay(1500);
   }
   lastInteractionI = 0;
+  firstDraw();
 }
 
 
