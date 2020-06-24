@@ -25,6 +25,8 @@ int SIDEBAR_MAX = 7;
 #define btnWidth 50
 #define btnHeight 50
 
+#define standbyInteractionI 1000
+
 int colors[][3] = {
   {209, 41, 224}, // Pink
   {48, 224, 41},
@@ -37,6 +39,8 @@ int colors[][3] = {
   {41, 52, 224}, // Blue
   {209, 41, 224}, // Purple
 };
+
+int lastInteractionI = 0;
 
 int selectedBar = 0;
 int sideBar[] = {
@@ -77,10 +81,24 @@ int mesaureValue()
   return buffer / measureLength;
 }
 
+void busyStandby()
+{
+  myGLCD.setColor(0, 0, 0);
+  myGLCD.print("STANDBY", CENTER, DISPLAY_HEIGHT / 2);
+
+  while(digitalRead(btnPin) == HIGH)
+  {
+    delay(1500);
+  }
+  lastInteractionI = 0;
+}
+
+
 void setup()
 {
   // pinMode(alkoPin, INPUT);
   // pinMode(alkoPinD, INPUT);
+
   pinMode(btnPin, INPUT);
   myGLCD.InitLCD();
   myGLCD.setFont(SmallFont);
@@ -274,6 +292,7 @@ void handleSettingsTouch()
 {
   while(myTouch.dataAvailable())
   {
+    lastInteractionI = 0;
     myTouch.read();
     int x = myTouch.getX();
     int y = myTouch.getY();
@@ -321,20 +340,23 @@ void handleSettingsTouch()
 
 void loop()
 {
+  int btnPresses = HIGH;
   if(inSettings)
   {
     drawSettingsText();
     handleSettingsTouch();
     
   }else{
+    btnPresses = digitalRead(btnPin);
     updateChart();
-    int btnPresses = digitalRead(btnPin);
     if(btnPresses == LOW && wasPressed == false)
     {
+      lastInteractionI = 0;
       wasPressed = true;
       startMeasure();
     }else if(btnPresses == HIGH && wasPressed)
     {
+      lastInteractionI = 0;
       wasPressed = false;
       stopMeasure();
     }
@@ -344,6 +366,7 @@ void loop()
 
     while(myTouch.dataAvailable())
     {
+      lastInteractionI = 0;
       myTouch.read();
       int x = myTouch.getX();
       int y = myTouch.getY();
@@ -360,6 +383,15 @@ void loop()
           updateSidebar(y / SIDEBAR_MARGIN);
         } 
       }
+    }
+  }
+
+  if(btnPresses == HIGH)
+  {
+    lastInteractionI++;
+    if(lastInteractionI > standbyInteractionI) // GO TO STANDBY
+    {
+      busyStandby();
     }
   }
 }
