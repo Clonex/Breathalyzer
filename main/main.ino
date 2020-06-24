@@ -3,9 +3,6 @@
 
 extern uint8_t SmallFont[];
 
-int btnPin = 12;
-int alkoPin = A2;
-int alkoPinD = 13;
 UTFT myGLCD(ILI9325C,A5,A4,A3,11);
 ITDB02_Touch  myTouch( A1, 10, A0, 9, 8);
 
@@ -13,6 +10,9 @@ bool inSettings = false;
 
 int alkoMax = 1023; // 1023
 int SIDEBAR_MAX = 7;
+
+#define btnPin 12
+#define alkoPin A2
 
 #define DISPLAY_WIDTH 319
 #define DISPLAY_HEIGHT 239
@@ -28,6 +28,16 @@ int SIDEBAR_MAX = 7;
 #define standbyInteractionI 1000
 
 int colors[][3] = {
+  // {27, 231, 255},   // Light blue
+  // {110, 235, 131},  // Light green
+  // {228, 255, 26},   // Green yellow
+  // {232, 170, 20},   // Orange
+  // {255, 87, 20},    // Deep orange
+  // {233, 188, 183},  // Pink
+  // {197, 175, 160},  // Light brown
+  // {41, 82, 74},     // Dark green
+  // {123, 44, 191},   // Purple
+
   {209, 41, 224}, // Pink
   {48, 224, 41},
   {224, 223, 41},
@@ -43,18 +53,7 @@ int colors[][3] = {
 int lastInteractionI = 0;
 
 int selectedBar = 0;
-int sideBar[] = {
-  0, 
-  0, 
-  0, 
-  0, 
-  0, 
-  0, 
-  0, 
-  0, 
-  0, 
-  0,
-};
+int sideBar[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 bool wasPressed = false;
 float buffer = 0;
@@ -83,8 +82,11 @@ int mesaureValue()
 
 void busyStandby()
 {
+  myGLCD.setBackColor(VGA_TRANSPARENT);
+  myGLCD.setColor(200, 200, 200);
+  myGLCD.print("STANDBY", (GRAPH_SIZE / 2) + 1, (DISPLAY_HEIGHT / 2) + 1);
   myGLCD.setColor(0, 0, 0);
-  myGLCD.print("STANDBY", CENTER, DISPLAY_HEIGHT / 2);
+  myGLCD.print("STANDBY", GRAPH_SIZE / 2, DISPLAY_HEIGHT / 2);
 
   while(digitalRead(btnPin) == HIGH)
   {
