@@ -53,7 +53,7 @@ int colors[][3] = {
 int lastInteractionI = 0;
 
 int selectedBar = 0;
-int sideBar[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int sideBar[] = { 200, 0, 0, 0, 0, 500, 0, 0, 0, 0 };
 
 bool wasPressed = false;
 float buffer = 0;
@@ -194,7 +194,21 @@ void drawChartArea()
   // Draw grid
   for(int x = 0; x < DISPLAY_WIDTH; x++){
     drawSystem(x);
+
+
+    // Initial score lines for every player
+    for(int i = 0; i < SIDEBAR_MAX; i++)
+    {
+      if(sideBar[i] > 0)
+      {
+        myGLCD.setColor(colors[i][0], colors[i][1], colors[i][2]);
+        int tempY = map(sideBar[i], 0, alkoMax, DISPLAY_HEIGHT, 0);
+        myGLCD.drawPixel(x, tempY);
+      }
+    }
   }
+
+  
 }
 
 void updateSidebar(int newSelectedBar)
@@ -209,7 +223,7 @@ void updateChart()
   //alkoMax
   int value = analogRead(alkoPin);
   value = map(value, 0, alkoMax, 0, 1023);
-  int y = map(value, 0, 1023, DISPLAY_HEIGHT, 0);
+  int y = map(value, 0, alkoMax, DISPLAY_HEIGHT, 0);
 
   myGLCD.setColor(241, 241, 241);
   if(graphX + 1 == GRAPH_SIZE)
@@ -222,6 +236,18 @@ void updateChart()
     drawSystem(graphX + 1);
   }
 
+  // Draw current score for every player
+  for(int i = 0; i < SIDEBAR_MAX; i++)
+  {
+    if(sideBar[i] > 0)
+    {
+      myGLCD.setColor(colors[i][0], colors[i][1], colors[i][2]);
+      int tempY = map(sideBar[i], 0, alkoMax, DISPLAY_HEIGHT, 0);
+      myGLCD.drawPixel(graphX, tempY);
+    }
+  }
+  
+  // Draw current value line
   myGLCD.setColor(colors[selectedBar][0], colors[selectedBar][1], colors[selectedBar][2]);
   myGLCD.drawPixel(graphX, y);
   myGLCD.drawPixel(graphX, y - 1);
@@ -318,15 +344,16 @@ void handleSettingsTouch()
       {
         if(x <= ((DISPLAY_WIDTH / 2) + (100 + btnWidth)) && x >= ((DISPLAY_WIDTH / 2) + 100) && alkoMax < 1023)
         {
-          alkoMax++;
+          alkoMax += 10;
         }else if(x >= ((DISPLAY_WIDTH / 2) - (100 + btnWidth)) && x <= ((DISPLAY_WIDTH / 2) - 100) && alkoMax > 1)
         {
-          if(alkoMax == 1000 || alkoMax == 100 || alkoMax == 10) // Decimal fix
+          int newVal = alkoMax - 10;
+          if((newVal < 1000 && alkoMax > 1000) || (newVal < 100 && alkoMax > 100) || (newVal < 10 && alkoMax > 10)) // Decimal fix
           {
             myGLCD.setColor(255, 255, 255);
             myGLCD.fillRect(0, 160, DISPLAY_WIDTH, 170);
           }
-          alkoMax--;
+          alkoMax -= 10;
         }
         break;
       }else if(y >= 190 && y <= (190 + btnHeight))// Exit
