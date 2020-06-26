@@ -53,7 +53,7 @@ int colors[][3] = {
 int lastInteractionI = 0;
 
 int selectedBar = 0;
-int sideBar[] = { 200, 0, 0, 0, 0, 500, 0, 0, 0, 0 };
+int sideBar[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 bool wasPressed = false;
 float buffer = 0;
