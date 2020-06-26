@@ -25,7 +25,7 @@ int SIDEBAR_MAX = 7;
 #define btnWidth 50
 #define btnHeight 50
 
-#define standbyInteractionI 1000
+#define standbyInteractionI 2500
 
 int colors[][3] = {
   // {27, 231, 255},   // Light blue
@@ -85,9 +85,9 @@ void busyStandby()
   myGLCD.clrScr();
   myGLCD.setBackColor(VGA_TRANSPARENT);
   myGLCD.setColor(150, 150, 150);
-  myGLCD.print("STANDBY", (DISPLAY_WIDTH / 2) + 1, (DISPLAY_HEIGHT / 2) + 1);
+  myGLCD.print("STANDBY", (DISPLAY_WIDTH / 2) + 1 - 30, (DISPLAY_HEIGHT / 2) + 1);
   myGLCD.setColor(255, 255, 255);
-  myGLCD.print("STANDBY", DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2);
+  myGLCD.print("STANDBY", (DISPLAY_WIDTH / 2) - 30, DISPLAY_HEIGHT / 2);
 
   while(digitalRead(btnPin) == HIGH)
   {
@@ -100,9 +100,6 @@ void busyStandby()
 
 void setup()
 {
-  // pinMode(alkoPin, INPUT);
-  // pinMode(alkoPinD, INPUT);
-
   pinMode(btnPin, INPUT);
   myGLCD.InitLCD();
   myGLCD.setFont(SmallFont);
