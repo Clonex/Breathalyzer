@@ -25,7 +25,7 @@ int SIDEBAR_MAX = 7;
 #define btnWidth 50
 #define btnHeight 50
 
-#define standbyInteractionI 2500
+#define standbyInteractionI 4000
 
 int colors[][3] = {
   // {27, 231, 255},   // Light blue
@@ -373,16 +373,18 @@ void loop()
   {
     drawSettingsText();
     handleSettingsTouch();
-    
   }else{
     btnPresses = digitalRead(btnPin);
     updateChart();
-    if(btnPresses == LOW && wasPressed == false)
+    if(btnPresses == LOW && wasPressed == false) // Initial button press
     {
       lastInteractionI = 0;
       wasPressed = true;
       startMeasure();
-    }else if(btnPresses == HIGH && wasPressed)
+    }else if(btnPresses == LOW) // Button still pressed
+    {
+      sideBar[selectedBar] = mesaureValue();
+    }else if(btnPresses == HIGH && wasPressed) // onKeyUp
     {
       lastInteractionI = 0;
       wasPressed = false;
