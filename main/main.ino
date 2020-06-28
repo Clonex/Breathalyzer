@@ -2,13 +2,11 @@
 #include <ITDB02_Touch.h>
 
 extern uint8_t SmallFont[];
-
-UTFT myGLCD(ILI9325C,A5,A4,A3,11);
-ITDB02_Touch  myTouch( A1, 10, A0, 9, 8);
+UTFT myGLCD(ILI9325C, A5, A4, A3, 11);
+ITDB02_Touch  myTouch(A1, 10, A0, 9, 8);
 
 bool inSettings = false;
-
-int alkoMax = 1023; // 1023
+int alkoMax = 1023;
 int SIDEBAR_MAX = 7;
 
 #define btnPin 12
@@ -89,14 +87,13 @@ void busyStandby()
   myGLCD.setColor(255, 255, 255);
   myGLCD.print("STANDBY", (DISPLAY_WIDTH / 2) - 30, DISPLAY_HEIGHT / 2);
 
-  while(digitalRead(btnPin) == HIGH)
+  while(digitalRead(btnPin) == LOW)
   {
     delay(1500);
   }
   lastInteractionI = 0;
   firstDraw();
 }
-
 
 void setup()
 {
@@ -149,7 +146,6 @@ void drawBarElement(int selected, int i)
   myGLCD.setBackColor(VGA_TRANSPARENT);
   myGLCD.print(msg, GRAPH_SIZE + 31, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 6)) + 1);
 
-  
   myGLCD.setColor(colors[i][0], colors[i][1], colors[i][2]);
   myGLCD.drawCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))), 6);
   myGLCD.fillCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))), 3);
@@ -195,7 +191,6 @@ void drawChartArea()
   for(int x = 0; x < DISPLAY_WIDTH; x++){
     drawSystem(x);
 
-
     // Initial score lines for every player
     for(int i = 0; i < SIDEBAR_MAX; i++)
     {
@@ -207,8 +202,6 @@ void drawChartArea()
       }
     }
   }
-
-  
 }
 
 void updateSidebar(int newSelectedBar)
@@ -294,7 +287,6 @@ void drawSettingsText()
 {
   myGLCD.print("Players:", CENTER, 60);
   myGLCD.print(String(SIDEBAR_MAX), CENTER, 80);
-
   
   myGLCD.setColor(200, 200, 200);
   myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 50, (DISPLAY_WIDTH / 2) - 100, 50 + btnHeight); // -
@@ -356,7 +348,7 @@ void handleSettingsTouch()
           alkoMax -= 10;
         }
         break;
-      }else if(y >= 190 && y <= (190 + btnHeight))// Exit
+      }else if(y >= 190 && y <= (190 + btnHeight)) // Exit
       {
         exitSettings();
         break;
@@ -365,26 +357,26 @@ void handleSettingsTouch()
   }
 }
 
-
 void loop()
 {
-  int btnPresses = HIGH;
+  int btnPresses = LOW;
   if(inSettings)
   {
     drawSettingsText();
     handleSettingsTouch();
   }else{
     btnPresses = digitalRead(btnPin);
+    
     updateChart();
-    if(btnPresses == LOW && wasPressed == false) // Initial button press
+    if(btnPresses == HIGH && wasPressed == false) // Initial button press
     {
       lastInteractionI = 0;
       wasPressed = true;
       startMeasure();
-    }else if(btnPresses == LOW) // Button still pressed
+    }else if(btnPresses == HIGH) // Button still pressed
     {
       sideBar[selectedBar] = mesaureValue();
-    }else if(btnPresses == HIGH && wasPressed) // onKeyUp
+    }else if(btnPresses == LOW && wasPressed) // onKeyUp
     {
       lastInteractionI = 0;
       wasPressed = false;
@@ -416,7 +408,7 @@ void loop()
     }
   }
 
-  if(btnPresses == HIGH)
+  if(btnPresses == LOW)
   {
     lastInteractionI++;
     if(lastInteractionI > standbyInteractionI) // GO TO STANDBY
