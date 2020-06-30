@@ -52,7 +52,9 @@ int lastInteractionI = 0;
 
 int selectedBar = 0;
 int sideBar[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int oldSideBar[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+bool measuring = false;
 bool wasPressed = false;
 float buffer = 0;
 int measureLength = 0;
@@ -62,11 +64,17 @@ int graphX = 0;
 void startMeasure(){
   buffer = 0;
   measureLength = 0;
+  measuring = true;
 }
 
 void stopMeasure(){
-  sideBar[selectedBar] = mesaureValue();
-  drawBarElement(selectedBar, selectedBar);
+  if(measuring)
+  {
+    measuring = false;
+    oldSideBar[selectedBar] = sideBar[selectedBar];
+    sideBar[selectedBar] = mesaureValue();
+    drawBarElement(selectedBar, selectedBar);
+  }
 }
 
 int mesaureValue()
@@ -121,6 +129,7 @@ void firstDraw(){
 
 void drawBarElement(int selected, int i)
 {
+  bool showOld = oldSideBar[i] != 0;
   String msg = String(sideBar[i]);
 
   int backColor = 255;
@@ -139,19 +148,39 @@ void drawBarElement(int selected, int i)
     myGLCD.fillRect(GRAPH_SIZE + 1, (i * SIDEBAR_MARGIN), GRAPH_SIZE + 1, ((i + 1) * SIDEBAR_MARGIN) + 5);
   }
 
-  // Shadow
+  // Circle shadow
   myGLCD.setColor(200, 200, 200);
   myGLCD.drawCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))) + 1, 6);
   myGLCD.fillCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))) + 1, 3);
-  myGLCD.setBackColor(VGA_TRANSPARENT);
-  myGLCD.print(msg, GRAPH_SIZE + 31, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 6)) + 1);
 
+  // Circle
   myGLCD.setColor(colors[i][0], colors[i][1], colors[i][2]);
   myGLCD.drawCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))), 6);
   myGLCD.fillCircle(GRAPH_SIZE + 15, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2))), 3);
+  
+  if(showOld)
+  {
+    drawText(msg, GRAPH_SIZE + 30, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 14)), 0, 189);
+    drawText(String(oldSideBar[i]), GRAPH_SIZE + 30, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 2)), 150, 189);
+  }else{
+    drawText(msg, GRAPH_SIZE + 30, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 6)), 0, 189);
+  }
+}
 
-  myGLCD.setColor(0, 0, 0);
-  myGLCD.print(msg, GRAPH_SIZE + 30, (i * SIDEBAR_MARGIN + ((SIDEBAR_MARGIN / 2) - 6)));
+void drawText(String msg, int x, int y, int color, int backColor)
+{
+   // Shadow
+  myGLCD.setColor(200, 200, 200);
+  if(backColor == 189)
+  {
+    myGLCD.setBackColor(VGA_TRANSPARENT);
+  }else{
+    myGLCD.setBackColor(backColor, backColor, backColor);
+  }
+  myGLCD.print(msg, x + 1, y + 1);
+
+  myGLCD.setColor(color, color, color);
+  myGLCD.print(msg, x, y);
 }
 
 void drawSidebar()
@@ -245,11 +274,11 @@ void updateChart()
   myGLCD.drawPixel(graphX, y);
   myGLCD.drawPixel(graphX, y - 1);
 
-  myGLCD.setColor(0, 0, 0);
-  myGLCD.setBackColor(241, 241, 241);
+  // myGLCD.setColor(0, 0, 0);
+  // myGLCD.setBackColor(241, 241, 241);
 
-  String val = String(value);
-  myGLCD.print(val, GRAPH_SIZE / 2, 1);
+  drawText(String(value), GRAPH_SIZE / 2, 1, 0, 241);
+
 
   myGLCD.setColor(200, 200, 200); // Shadow
   myGLCD.drawPixel(graphX, y + 1);
@@ -271,9 +300,10 @@ void toSettings()
   myGLCD.setColor(255, 255, 255);
   myGLCD.fillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
-  myGLCD.setBackColor(255, 255, 255);
-  myGLCD.setColor(0, 0, 0);
-  myGLCD.print("SETTINGS", CENTER, CENTER);
+  // myGLCD.setBackColor(255, 255, 255);
+  // myGLCD.setColor(0, 0, 0);
+  // myGLCD.print("SETTINGS", CENTER, CENTER);
+  drawText("SETTINGS", 10, (DISPLAY_WIDTH / 2) - 15, 0, 255);
   inSettings = true;
 }
 
@@ -285,10 +315,10 @@ void exitSettings()
 
 void drawSettingsText()
 {
+  myGLCD.setColor(100, 100, 100);
   myGLCD.print("Players:", CENTER, 60);
   myGLCD.print(String(SIDEBAR_MAX), CENTER, 80);
   
-  myGLCD.setColor(200, 200, 200);
   myGLCD.drawRoundRect((DISPLAY_WIDTH / 2) - (100 + btnWidth), 50, (DISPLAY_WIDTH / 2) - 100, 50 + btnHeight); // -
   myGLCD.print("-", (DISPLAY_WIDTH / 2) - (100 + (btnWidth / 2)), 50 + (btnHeight / 2));
 
@@ -373,9 +403,6 @@ void loop()
       lastInteractionI = 0;
       wasPressed = true;
       startMeasure();
-    }else if(btnPresses == HIGH) // Button still pressed
-    {
-      sideBar[selectedBar] = mesaureValue();
     }else if(btnPresses == LOW && wasPressed) // onKeyUp
     {
       lastInteractionI = 0;
@@ -384,7 +411,8 @@ void loop()
     }
 
     myGLCD.setColor(0, 0, 0);
-    myGLCD.print("Settings", 10, 5);
+    drawText("Settings", 10, 5, 0, 189);
+
 
     while(myTouch.dataAvailable())
     {
