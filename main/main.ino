@@ -97,7 +97,7 @@ void busyStandby()
 
   while(digitalRead(btnPin) == LOW)
   {
-    delay(1500);
+    delay(3500);
   }
   lastInteractionI = 0;
   firstDraw();
@@ -274,11 +274,7 @@ void updateChart()
   myGLCD.drawPixel(graphX, y);
   myGLCD.drawPixel(graphX, y - 1);
 
-  // myGLCD.setColor(0, 0, 0);
-  // myGLCD.setBackColor(241, 241, 241);
-
   drawText(String(value), GRAPH_SIZE / 2, 1, 0, 241);
-
 
   myGLCD.setColor(200, 200, 200); // Shadow
   myGLCD.drawPixel(graphX, y + 1);
@@ -299,11 +295,7 @@ void toSettings()
 {
   myGLCD.setColor(255, 255, 255);
   myGLCD.fillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-
-  // myGLCD.setBackColor(255, 255, 255);
-  // myGLCD.setColor(0, 0, 0);
-  // myGLCD.print("SETTINGS", CENTER, CENTER);
-  drawText("SETTINGS", 10, (DISPLAY_WIDTH / 2) - 15, 0, 255);
+  drawText("SETTINGS", (DISPLAY_WIDTH / 2) - 15, 10, 0, 255);
   inSettings = true;
 }
 
@@ -411,8 +403,7 @@ void loop()
     }
 
     myGLCD.setColor(0, 0, 0);
-    drawText("Settings", 10, 5, 0, 189);
-
+    myGLCD.print("Settings", 10, 5);
 
     while(myTouch.dataAvailable())
     {
