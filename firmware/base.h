@@ -6,6 +6,8 @@
 #include <Arduino_ST7789.h>
 #include <SPI.h>
 
+#define SENSOR_PIN 35
+
 #define DISPLAY_WIDTH 320
 #define DISPLAY_HEIGHT 240
 
@@ -22,19 +24,21 @@
 #define TFT_DC   16  // Data Command control pin
 #define TFT_RST   17  // Reset pin (could connect to RST pin)
 
+#define GREY 0x8C51 // RGB565
+
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_CS);
 
-int colors[][3] = {
-  {209, 41, 224}, // Pink
-  {48, 224, 41},
-  {224, 223, 41},
-  {224, 130, 41}, // Orange
-  {224, 41, 41}, // Red
-  {41, 194, 224}, // Light blue
-  {41, 224, 161}, // Turquieze
-  {224, 41, 96}, // Red blue
-  {41, 52, 224}, // Blue
-  {209, 41, 224}, // Purple
+int colors[] = {
+  0xD129E0, // Pink
+  0x30E029,
+  0xE0DF29,
+  0xE08229, // Orange
+  0xE02929, // Red
+  0x29C2E0, // Light blue
+  0x29E0A1, // Turquieze
+  0xE02960, // Red blue
+  0x2934E0, // Blue
+  0xD129E0, // Purple
 };
 
 int selectedBar = 0;
