@@ -5,13 +5,37 @@ void drawSidebar()
     
 }
 
+void drawScoreLines()
+{
+    for(int i = 0; i < MAX_PLAYERS; i++)
+    {
+        int score = scores[i];
+        Serial.println("HUH:");
+        Serial.println(score);
+        if(score >= 0)
+        {
+            Serial.println("123");
+            int color = colors[selectedPlayer];
+            int y = 500;//map(score, 0, 4095, 0, tft.height() - 50) + 25;
+            int x = tft.width() - graphX;
+
+            tft.drawPixel(x, y, color);
+            tft.drawPixel(x, y - 1, GREY);
+        }
+    }
+}
+
 void drawPoint(int x, int y)
 {
-    // tft.drawLine(x, 0, x, tft.height(), WHITE);
+    int color = colors[selectedPlayer];
+
+    x = tft.width() - x;
+    tft.drawLine(x, 0, x, tft.height(), WHITE);
     // tft.drawLine(x + 1, 0, x + 1, tft.height(), WHITE);
     drawChartLine(x);
 
-    tft.drawPixel(x, y, RED);
+    tft.drawPixel(x, y, color);
+    tft.drawPixel(x, y - 1, GREY);
 }
 
 void drawChartBackground()

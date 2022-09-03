@@ -6,19 +6,19 @@
 #include <Arduino_ST7789.h>
 #include <SPI.h>
 
-#define SENSOR_PIN 35
+#define SENSOR_PIN 34
 #define SAMPLE_SIZE 1024 * 10
 
-#define BTN_UP 38
+#define BTN_UP 39
 #define BTN_MID 37
-#define BTN_DOWN 39
+#define BTN_DOWN 38
 
 #define DISPLAY_WIDTH 320
 #define DISPLAY_HEIGHT 240
 
-#define SIDEBAR_MAX 7
+#define MAX_PLAYERS 7
 #define SIDEBAR_SIZE 75
-#define SIDEBAR_MARGIN (DISPLAY_HEIGHT / SIDEBAR_MAX)
+#define SIDEBAR_MARGIN (DISPLAY_HEIGHT / MAX_PLAYERS)
 
 #define GRAPH_SIZE (DISPLAY_WIDTH - SIDEBAR_SIZE)
 
@@ -36,19 +36,20 @@
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_CS);
 
 int colors[] = {
-  0xD129E0, // Pink
-  0x30E029,
-  0xE0DF29,
-  0xE08229, // Orange
-  0xE02929, // Red
-  0x29C2E0, // Light blue
-  0x29E0A1, // Turquieze
-  0xE02960, // Red blue
-  0x2934E0, // Blue
-  0xD129E0, // Purple
+  0xD15C, // Pink
+  0x3705,
+  0xE6E5,
+  0xE405, // Orange
+  0xE145, // Red
+  0x2E1C, // Light blue
+  0x2F14, // Turquieze
+  0xE14C, // Red blue
+  0x29BC, // Blue
+  0xD15C, // Purple
 };
+int colorAmount = sizeof(colors) / sizeof(colors[0]);
 
-int selectedBar = 0;
-int sideBar[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int selectedPlayer = 0;
+int scores[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 int graphX = 0;
 #endif

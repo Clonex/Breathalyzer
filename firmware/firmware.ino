@@ -22,10 +22,10 @@ int data[SAMPLE_SIZE] = {};
 
 void loop()
 {
-    int value = 500;//analogRead(SENSOR_PIN);
+    int value = analogRead(SENSOR_PIN);
     // Serial.println(value);
     data[dLength] = value;
-    dLength++;
+    // dLength++;
 
     if(btnPressed(BTN_UP))
     {
@@ -40,6 +40,7 @@ void loop()
     if(btnPressed(BTN_DOWN))
     {
         Serial.println("DOWN pressed..");
+        selectedPlayer = (selectedPlayer + 1) % colorAmount;
     }
 
     if(dLength >= SAMPLE_SIZE)
@@ -50,8 +51,9 @@ void loop()
         dLength = 0;
     }
 
-    int y = map(value, 0, 1023, 0, tft.height());
+    int y = map(value, 0, 4095, 0, tft.height() - 50) + 25;
     drawPoint(graphX, y);
     graphX = (graphX + 1) % tft.width();
+    drawScoreLines();
     btnTick();
 }
