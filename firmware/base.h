@@ -9,6 +9,10 @@
 #define SENSOR_PIN 35
 #define SAMPLE_SIZE 1024 * 10
 
+#define BTN_UP 38
+#define BTN_MID 37
+#define BTN_DOWN 39
+
 #define DISPLAY_WIDTH 320
 #define DISPLAY_HEIGHT 240
 

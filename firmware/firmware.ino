@@ -2,6 +2,10 @@
 
 void setup(void)
 {
+    pinMode(BTN_UP, INPUT);
+    pinMode(BTN_MID, INPUT);
+    pinMode(BTN_DOWN, INPUT);
+
     Serial.begin(9600);
 
     tft.init(DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -10,6 +14,7 @@ void setup(void)
     tft.fillScreen(WHITE);
 
     drawChartBackground();
+    btnTick();
 }
 
 int dLength = 0;
@@ -22,6 +27,21 @@ void loop()
     data[dLength] = value;
     dLength++;
 
+    if(btnPressed(BTN_UP))
+    {
+        Serial.println("UP pressed..");
+    }
+
+    if(btnPressed(BTN_MID))
+    {
+        Serial.println("MID pressed..");
+    }
+
+    if(btnPressed(BTN_DOWN))
+    {
+        Serial.println("DOWN pressed..");
+    }
+
     if(dLength >= SAMPLE_SIZE)
     {
         int score = getScore(0.1);
@@ -33,4 +53,5 @@ void loop()
     int y = map(value, 0, 1023, 0, tft.height());
     drawPoint(graphX, y);
     graphX = (graphX + 1) % tft.width();
+    btnTick();
 }

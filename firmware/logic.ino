@@ -6,10 +6,10 @@
 int getScore(float cutOffPercent)
 {
     int ret = 0;
-    insertionSort(data, SAMPLE_SIZE);
-
     int margin = SAMPLE_SIZE * cutOffPercent;
     int size = 0;
+    insertionSort(data, SAMPLE_SIZE);
+    
     for(int i = margin; i < (SAMPLE_SIZE - margin); i++)
     {
         if(data[i] > 0)
@@ -42,3 +42,4 @@ void insertionSort(int arr[], int size)
         arr[j + 1] = key;
     }
 }
+
