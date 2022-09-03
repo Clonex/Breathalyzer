@@ -7,6 +7,7 @@
 #include <SPI.h>
 
 #define SENSOR_PIN 35
+#define SAMPLE_SIZE 1024 * 10
 
 #define DISPLAY_WIDTH 320
 #define DISPLAY_HEIGHT 240
@@ -25,6 +26,8 @@
 #define TFT_RST   17  // Reset pin (could connect to RST pin)
 
 #define GREY 0x8C51 // RGB565
+#define OFF_WHITE 0xF79E
+#define OFF_BLACK 0xE71C
 
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_CS);
 
