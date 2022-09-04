@@ -33,6 +33,8 @@
 #define OFF_WHITE 0xF79E
 #define OFF_BLACK 0xE71C
 
+struct animation;
+
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_CS);
 
 int colors[] = {

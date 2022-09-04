@@ -10,11 +10,11 @@ void drawScoreLines()
     for(int i = 0; i < MAX_PLAYERS; i++)
     {
         int score = scores[i];
-        Serial.println("HUH:");
-        Serial.println(score);
+        // Serial.println("HUH:");
+        // Serial.println(score);
         if(score >= 0)
         {
-            Serial.println("123");
+            // Serial.println("123");
             int color = colors[selectedPlayer];
             int y = 500;//map(score, 0, 4095, 0, tft.height() - 50) + 25;
             int x = tft.width() - graphX;

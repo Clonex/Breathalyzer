@@ -40,6 +40,7 @@ void loop()
     if(btnPressed(BTN_DOWN))
     {
         Serial.println("DOWN pressed..");
+        showCounter();
         selectedPlayer = (selectedPlayer + 1) % colorAmount;
     }
 
@@ -56,4 +57,5 @@ void loop()
     graphX = (graphX + 1) % tft.width();
     drawScoreLines();
     btnTick();
+    animationTick();
 }

@@ -28,6 +28,17 @@ int getScore(float cutOffPercent)
     return ret / size;
 }
 
+void timerAnimation(int progress)
+{
+    Serial.print("Animation progress: ");
+    Serial.println(progress);
+}
+
+void showCounter()
+{
+    Animation(timerAnimation, 100);
+}
+
 void insertionSort(int arr[], int size)
 {
     for(int i = 0; i < size; i++)
