@@ -1,7 +1,11 @@
 #include "base.h"
+#include <WiFi.h>
 
 void setup(void)
 {
+    WiFi.setSleep(true);
+    // analogReadResolution(1);
+
     pinMode(BTN_UP, INPUT);
     pinMode(BTN_MID, INPUT);
     pinMode(BTN_DOWN, INPUT);
@@ -18,18 +22,29 @@ void setup(void)
 }
 
 int dLength = 0;
-int data[SAMPLE_SIZE] = {};
+int data[SAMPLE_SIZE] = {0};
 
 void loop()
 {
     int value = analogRead(SENSOR_PIN);
-    // Serial.println(value);
-    data[dLength] = value;
-    // dLength++;
+    if(measuring)
+    {
+        data[dLength] = value;
+        dLength++;
+        if(dLength >= (SAMPLE_SIZE - 1))
+        {
+            measuring = false;
+            scores[selectedPlayer] = getScore(0.1);
+            Serial.print("Score: ");
+            Serial.println(scores[selectedPlayer]);
+            dLength = 0;
+        }
+    }
 
     if(btnPressed(BTN_UP))
     {
         Serial.println("UP pressed..");
+        selectedPlayer = (selectedPlayer + 1) % colorAmount;
     }
 
     if(btnPressed(BTN_MID))
@@ -41,7 +56,7 @@ void loop()
     {
         Serial.println("DOWN pressed..");
         showCounter();
-        selectedPlayer = (selectedPlayer + 1) % colorAmount;
+        measuring = true;
     }
 
     if(dLength >= SAMPLE_SIZE)

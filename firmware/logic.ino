@@ -12,9 +12,10 @@ int getScore(float cutOffPercent)
     
     for(int i = margin; i < (SAMPLE_SIZE - margin); i++)
     {
-        if(data[i] > 0)
+        int value = data[i];
+        if(value > 0)
         {
-            ret += data[i];
+            ret += value;
             size++;
         }
     }
@@ -25,18 +26,30 @@ int getScore(float cutOffPercent)
         data[i] = 0;
     }
 
+    if(size == 0)
+    {
+        return 0;
+    }
+
     return ret / size;
 }
 
 void timerAnimation(float progress)
 {
-    Serial.print("Animation progress: ");
-    Serial.println(progress);
+    float lastProgress = 0;
+    if(progress > 0.1)
+    {
+        lastProgress = progress - 0.1;
+    }
+    drawPieSlice(tft.width() / 2, tft.height() / 2, 50, BLACK, lastProgress * 360, progress * 360);
 }
 
 void showCounter()
 {
-    Animation(timerAnimation, 100);
+    int x = tft.width() / 2;
+    int y = tft.height() / 2;
+    tft.fillCircle(x, y, 50, OFF_WHITE);
+    Animation(timerAnimation, SAMPLE_SIZE);
 }
 
 void insertionSort(int arr[], int size)

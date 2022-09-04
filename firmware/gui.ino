@@ -1,4 +1,5 @@
 #include "base.h"
+#define LOADING_RESOLUTION 18
 
 void drawSidebar()
 {
@@ -30,9 +31,11 @@ void drawPoint(int x, int y)
     int color = colors[selectedPlayer];
 
     x = tft.width() - x;
-    tft.drawLine(x, 0, x, tft.height(), WHITE);
-    // tft.drawLine(x + 1, 0, x + 1, tft.height(), WHITE);
-    drawChartLine(x);
+    if(!measuring)
+    {
+        tft.drawLine(x, 0, x, tft.height(), WHITE);
+        drawChartLine(x);
+    }
 
     tft.drawPixel(x, y, color);
     tft.drawPixel(x, y - 1, GREY);
@@ -70,4 +73,29 @@ void drawText(char *text, uint16_t color)
     tft.setTextColor(color);
     tft.setTextWrap(true);
     tft.print(text);
+}
+
+void drawCircle(double amount, int radius, int innerRadius, int x, int y, int color)
+{
+    int points = amount * LOADING_RESOLUTION;
+    double slice = 2 * PI / LOADING_RESOLUTION;// / points;
+    for (int i = 0; i < points; i++)
+    {
+        double angle = slice * i;
+        int newX = (int)(x + radius * cos(angle));
+        int newY = (int)(y + radius * sin(angle));
+        
+        tft.fillCircle(newX, newY, innerRadius, color);
+    }
+}
+
+void drawPieSlice(int x, int y, int radius, int color, int startAngle, int EndAngle)
+{
+  for (int i=startAngle; i<EndAngle; i++)
+  {
+    double radians = i * PI / 180;
+    double px = x + radius * cos(radians);
+    double py = y + radius * sin(radians);
+    tft.drawPixel(px, py, color);
+  }
 }

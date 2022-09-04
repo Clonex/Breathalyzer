@@ -7,7 +7,7 @@
 #include <SPI.h>
 
 #define SENSOR_PIN 34
-#define SAMPLE_SIZE 1024 * 10
+#define SAMPLE_SIZE 1500
 
 #define BTN_UP 39
 #define BTN_MID 37
@@ -54,4 +54,6 @@ int colorAmount = sizeof(colors) / sizeof(colors[0]);
 int selectedPlayer = 0;
 int scores[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 int graphX = 0;
+
+bool measuring = false;
 #endif
