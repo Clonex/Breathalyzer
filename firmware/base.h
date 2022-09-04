@@ -7,7 +7,7 @@
 #include <SPI.h>
 
 #define SENSOR_PIN 34
-#define SAMPLE_SIZE 1500
+#define SAMPLE_SIZE 1300
 
 #define BTN_UP 39
 #define BTN_MID 37

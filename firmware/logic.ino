@@ -41,11 +41,13 @@ void timerAnimation(float progress)
     {
         lastProgress = progress - 0.1;
     }
-    drawPieSlice(tft.width() / 2, tft.height() / 2, 50, BLACK, lastProgress * 360, progress * 360);
+
+    drawPieSlice(tft.width() / 2, tft.height() / 2, 50, 0xFDA2, 0xF800, lastProgress * 360, progress * 360);
 }
 
 void showCounter()
 {
+    Serial.println("showCounter()");
     int x = tft.width() / 2;
     int y = tft.height() / 2;
     tft.fillCircle(x, y, 50, OFF_WHITE);

@@ -89,13 +89,15 @@ void drawCircle(double amount, int radius, int innerRadius, int x, int y, int co
     }
 }
 
-void drawPieSlice(int x, int y, int radius, int color, int startAngle, int EndAngle)
+void drawPieSlice(int x, int y, int radius, int fromColor, int toColor, int startAngle, int endAngle)
 {
-  for (int i=startAngle; i<EndAngle; i++)
+  for (int i = startAngle; i < endAngle; i++)
   {
     double radians = i * PI / 180;
+    int tempColor = colorTransition(fromColor, toColor, (float)i / 360.0);
+
     double px = x + radius * cos(radians);
     double py = y + radius * sin(radians);
-    tft.drawPixel(px, py, color);
+    tft.drawPixel(px, py, tempColor);
   }
 }
