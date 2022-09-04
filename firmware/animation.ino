@@ -1,13 +1,13 @@
 struct animation {
     int tick;
     int duration;
-    void (*callback)(int);
+    void (*callback)(float);
 };
 
 int animationCount = 0;
 animation animations[10] = {};
 
-animation *Animation(void (*f)(int), int duration)
+animation *Animation(void (*f)(float), int duration)
 {
     struct animation anim;
     anim.callback = (*f);
@@ -23,9 +23,9 @@ void animationTick()
     for(int i = 0; i < animationCount; i++)
     {
         animation *anim = &animations[i];
-        anim->tick++;
-        int progress = anim->tick / anim->duration;
+        float progress = (float) anim->tick / (float) anim->duration;
         anim->callback(progress);
+        anim->tick++;
         if(progress >= 1)
         {
             removeAnimation(i);

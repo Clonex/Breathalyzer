@@ -28,7 +28,7 @@ int getScore(float cutOffPercent)
     return ret / size;
 }
 
-void timerAnimation(int progress)
+void timerAnimation(float progress)
 {
     Serial.print("Animation progress: ");
     Serial.println(progress);
