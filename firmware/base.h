@@ -2,6 +2,9 @@
 #ifndef BASE_H
 #define BASE_H
 
+// #define ESP8266
+// typedef volatile uint32_t RwReg;
+// #define USE_FAST_IO
 #include <Adafruit_GFX.h>
 #include <Arduino_ST7789.h>
 #include <SPI.h>

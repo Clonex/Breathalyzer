@@ -41,16 +41,18 @@ void timerAnimation(float progress)
     {
         lastProgress = progress - 0.1;
     }
-
+    
+    // double vibrationVal = (easeOutBounce(progress) * 200) + 50;
+    float vibrationVal = 40 + (clickingSine(progress) * 215);
+    // float vibrationVal = 40 + (sin(progress * PI) * 215);
+    dacWrite(26, vibrationVal);
+    
     drawPieSlice(tft.width() / 2, tft.height() / 2, 50, 0xFDA2, 0xF800, lastProgress * 360, progress * 360);
 }
 
 void showCounter()
 {
-    Serial.println("showCounter()");
-    int x = tft.width() / 2;
-    int y = tft.height() / 2;
-    tft.fillCircle(x, y, 50, OFF_WHITE);
+    tft.fillCircle(tft.width() / 2, tft.height() / 2, 50, OFF_WHITE);
     Animation(timerAnimation, SAMPLE_SIZE);
 }
 
@@ -69,3 +71,42 @@ void insertionSort(int arr[], int size)
     }
 }
 
+float clickingSine(float x)
+{
+    int temp = x * 100;
+    if(0.4 > x && temp % 2 == 0)
+    {
+        return 0;
+    }else{
+        return sin(x * PI);
+    }
+}
+
+// double easeInOutBounce(double x) {
+//     if(x < 0.5)
+//     {
+//         return (1 - easeOutBounce(1 - 2 * x)) / 2;
+//     }else{
+//         return (1 + easeOutBounce(2 * x - 1)) / 2;;
+//     }
+// }
+
+// double easeOutBounce(double x)
+// {
+//     double n1 = 7.5625;
+//     double d1 = 2.75;
+
+//     if (x < 1 / d1) {
+//         return n1 * x * x;
+//     } else if (x < 2 / d1) {
+//         return n1 * (x -= 1.5 / d1) * x + 0.75;
+//     } else if (x < 2.5 / d1) {
+//         return n1 * (x -= 2.25 / d1) * x + 0.9375;
+//     } else {
+//         return n1 * (x -= 2.625 / d1) * x + 0.984375;
+//     }
+// }
+
+// double easeInBounce(double x) {
+//     return 1 - easeOutBounce(1 - x);
+// }

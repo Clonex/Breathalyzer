@@ -6,7 +6,6 @@ unsigned int convertRGB(unsigned long rgb)
     return (((rgb & 0xf80000) >> 8) | ((rgb & 0xfc00) >> 5) | ((rgb & 0xf8) >> 3));
 }
 
-
 unsigned int colorTransition(unsigned long fromRGB, unsigned long toRGB, double percent)
 {
     if(percent < 0.5)

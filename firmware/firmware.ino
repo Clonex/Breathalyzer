@@ -5,7 +5,7 @@ void setup(void)
 {
     WiFi.setSleep(true);
     // analogReadResolution(1);
-
+    
     pinMode(BTN_UP, INPUT);
     pinMode(BTN_MID, INPUT);
     pinMode(BTN_DOWN, INPUT);
@@ -27,6 +27,7 @@ int data[SAMPLE_SIZE] = {0};
 void loop()
 {
     int value = analogRead(SENSOR_PIN);
+    // Serial.println(value);
     if(measuring)
     {
         data[dLength] = value;
@@ -67,7 +68,9 @@ void loop()
         dLength = 0;
     }
 
-    int y = map(value, 0, 4095, 0, tft.height() - 50) + 25;
+    // int y = map(value, 0, 1024, 0, tft.height() - 50) + 25;
+    // int y = map(value, 0, 4095, 0, tft.height() - 50) + 25;
+    int y = map(value, 0, 1024, 0, tft.height() - 50) + 25;
     drawPoint(graphX, y);
     graphX = (graphX + 1) % tft.width();
     drawScoreLines();
